@@ -14,18 +14,19 @@ export default async function AppLayout({
   }
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh" }}>
+    <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
       <Sidebar />
       <div style={{
         marginLeft: "var(--sidebar-width)",
         flex: 1,
         display: "flex",
         flexDirection: "column",
-        minHeight: "100vh",
+        height: "100vh",
+        overflow: "hidden",
         background: "var(--bg-primary)",
       }}>
         <TopBar user={session.user || {}} />
-        <main style={{ flex: 1, padding: "24px", maxWidth: "1400px", width: "100%" }}>
+        <main style={{ flex: 1, padding: "24px", maxWidth: "1400px", width: "100%", overflowY: "auto" }}>
           {children}
         </main>
       </div>
