@@ -239,7 +239,7 @@ export default function LoansPage() {
               </div>
               <div>
                 <label className="form-label">Person Name *</label>
-                <input className="input-field" placeholder="Rahul Sharma" value={form.personName}
+                <input className="input-field" placeholder="Person's name" value={form.personName}
                   onChange={e => setForm(f => ({ ...f, personName: e.target.value }))} required />
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
