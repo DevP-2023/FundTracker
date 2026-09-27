@@ -4,19 +4,20 @@ import { prisma } from "@/lib/prisma";
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const data = await request.json();
   const goal = await prisma.goal.findFirst({
-    where: { id: params.id, userId: session.user.id },
+    where: { id, userId: session.user.id },
   });
   if (!goal) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const updatedGoal = await prisma.goal.update({
-    where: { id: params.id },
+    where: { id },
     data: {
       ...(data.currentAmount !== undefined && { currentAmount: data.currentAmount }),
       ...(data.status !== undefined && { status: data.status }),
@@ -26,7 +27,7 @@ export async function PATCH(
 
   // Check if goal is completed
   if (updatedGoal.currentAmount >= updatedGoal.targetAmount && updatedGoal.status !== "completed") {
-    await prisma.goal.update({ where: { id: params.id }, data: { status: "completed" } });
+    await prisma.goal.update({ where: { id }, data: { status: "completed" } });
     await prisma.notification.create({
       data: {
         userId: session.user.id,

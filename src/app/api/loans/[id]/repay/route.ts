@@ -5,15 +5,16 @@ import { prisma } from "@/lib/prisma";
 // POST - Add repayment
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { amount, date, notes, accountId } = await request.json();
 
   const loan = await prisma.loan.findFirst({
-    where: { id: params.id, userId: session.user.id },
+    where: { id, userId: session.user.id },
   });
 
   if (!loan) return NextResponse.json({ error: "Loan not found" }, { status: 404 });

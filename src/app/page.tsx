@@ -8,4 +8,5 @@ export default async function HomePage() {
   } else {
     redirect("/login");
   }
+  return null;
 }

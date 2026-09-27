@@ -4,14 +4,15 @@ import { prisma } from "@/lib/prisma";
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
     const tx = await prisma.transaction.findFirst({
-      where: { id: params.id, userId: session.user.id },
+      where: { id, userId: session.user.id },
     });
     if (!tx) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
@@ -29,7 +30,7 @@ export async function DELETE(
       await prisma.account.update({ where: { id: tx.transferFromId }, data: { balance: { increment: tx.amount } } });
     }
 
-    await prisma.transaction.delete({ where: { id: params.id } });
+    await prisma.transaction.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -38,14 +39,15 @@ export async function DELETE(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
     const tx = await prisma.transaction.findFirst({
-      where: { id: params.id, userId: session.user.id },
+      where: { id, userId: session.user.id },
     });
     if (!tx) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
@@ -67,7 +69,7 @@ export async function PATCH(
     }
 
     const updatedTx = await prisma.transaction.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         ...(data.type && { type: data.type }),
         ...(data.amount !== undefined && { amount: data.amount }),
