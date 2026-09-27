@@ -3,7 +3,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
-  title: "WealthOS — Personal Finance Portfolio",
+  title: "CapitalNest — Personal Finance Portfolio",
   description: "Your complete personal finance and investment portfolio management system. Track expenses, income, investments, loans, budgets, and goals in one place.",
   keywords: "personal finance, expense tracker, investment portfolio, budget manager, net worth",
 };

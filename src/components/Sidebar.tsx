@@ -49,11 +49,11 @@ export function Sidebar() {
           }}>💼</div>
           <div>
             <div style={{ fontSize: "16px", fontWeight: "800", color: "var(--text-primary)" }}>
-              Wealth<span style={{
+              Capital<span style={{
                 background: "linear-gradient(135deg, #3b82f6, #8b5cf6)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
-              }}>OS</span>
+              }}>Nest</span>
             </div>
             <div style={{ fontSize: "11px", color: "var(--text-muted)" }}>Portfolio Manager</div>
           </div>

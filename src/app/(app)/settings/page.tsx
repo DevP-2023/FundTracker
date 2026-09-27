@@ -58,7 +58,7 @@ export default function SettingsPage() {
         {/* App Info */}
         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           <div className="glass-card" style={{ padding: "24px" }}>
-            <h3 style={{ fontSize: "16px", fontWeight: "700", marginBottom: "16px" }}>📱 About WealthOS</h3>
+            <h3 style={{ fontSize: "16px", fontWeight: "700", marginBottom: "16px" }}>📱 About CapitalNest</h3>
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
               {[
                 { label: "Version", value: "1.0.0" },
@@ -99,7 +99,7 @@ export default function SettingsPage() {
               className="btn-danger"
               style={{ width: "100%", justifyContent: "center" }}
             >
-              🚪 Sign Out of WealthOS
+              🚪 Sign Out of CapitalNest
             </button>
           </div>
         </div>
