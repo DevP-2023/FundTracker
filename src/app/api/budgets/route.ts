@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const budgets = await prisma.budget.findMany({
-    where: { userId: session.user.id, isActive: true },
+    where: { userId: session.user?.id as string, isActive: true },
     include: { category: true },
   });
 
@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
   const budgetsWithSpending = await Promise.all(
     budgets.map(async (budget) => {
       const where: Record<string, unknown> = {
-        userId: session.user.id,
+        userId: session.user?.id as string,
         type: "expense",
         date: { gte: startOfMonth, lte: endOfMonth },
       };
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
 
   const budget = await prisma.budget.create({
     data: {
-      userId: session.user.id,
+      userId: session.user?.id as string,
       name: data.name,
       type: data.type || "category",
       categoryId: data.categoryId || null,

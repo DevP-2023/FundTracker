@@ -202,7 +202,7 @@ export default function DashboardPage() {
               <YAxis stroke="var(--text-muted)" tick={{ fontSize: 12 }} tickFormatter={v => `₹${(v/1000).toFixed(0)}k`} />
               <Tooltip
                 contentStyle={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "10px", fontSize: "13px" }}
-                formatter={(v: number) => [formatCurrency(v), ""]}
+                formatter={(v: any) => [formatCurrency(v), ""]}
               />
               <Area type="monotone" dataKey="income" stroke="#10b981" fill="url(#incomeGrad)" strokeWidth={2} />
               <Area type="monotone" dataKey="expense" stroke="#ef4444" fill="url(#expenseGrad)" strokeWidth={2} />
@@ -232,7 +232,7 @@ export default function DashboardPage() {
                   </Pie>
                   <Tooltip
                     contentStyle={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "10px", fontSize: "12px" }}
-                    formatter={(v: number) => [formatCurrency(v), ""]}
+                    formatter={(v: any) => [formatCurrency(v), ""]}
                   />
                 </PieChart>
               </ResponsiveContainer>

@@ -105,7 +105,7 @@ export default function AnalyticsPage() {
               <YAxis stroke="var(--text-muted)" tick={{ fontSize: 11 }} tickFormatter={v => `₹${(v/1000).toFixed(0)}k`} />
               <Tooltip
                 contentStyle={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "10px" }}
-                formatter={(v: number) => [formatCurrency(v), ""]}
+                formatter={(v: any) => [formatCurrency(v), ""]}
               />
               <Legend />
               <Bar dataKey="income" fill="#10b981" radius={[4, 4, 0, 0]} name="Income" />
@@ -128,7 +128,7 @@ export default function AnalyticsPage() {
                   </Pie>
                   <Tooltip
                     contentStyle={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "10px", fontSize: "12px" }}
-                    formatter={(v: number) => [formatCurrency(v), ""]}
+                    formatter={(v: any) => [formatCurrency(v), ""]}
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -166,7 +166,7 @@ export default function AnalyticsPage() {
             <YAxis stroke="var(--text-muted)" tick={{ fontSize: 11 }} tickFormatter={v => `₹${(v/1000).toFixed(0)}k`} />
             <Tooltip
               contentStyle={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "10px" }}
-              formatter={(v: number) => [formatCurrency(v), "Net Worth"]}
+              formatter={(v: any) => [formatCurrency(v), "Net Worth"]}
             />
             <Area type="monotone" dataKey="netWorth" stroke="#8b5cf6" fill="url(#nwGrad)" strokeWidth={3} />
           </AreaChart>

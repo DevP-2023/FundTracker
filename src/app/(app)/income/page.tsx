@@ -87,7 +87,7 @@ export default function IncomePage() {
                 <YAxis stroke="var(--text-muted)" tick={{ fontSize: 11 }} tickFormatter={v => `₹${(v/1000).toFixed(0)}k`} />
                 <Tooltip
                   contentStyle={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "10px" }}
-                  formatter={(v: number) => [formatCurrency(v), "Amount"]}
+                  formatter={(v: any) => [formatCurrency(v), "Amount"]}
                 />
                 <Bar dataKey="value" fill="#10b981" radius={[6, 6, 0, 0]} />
               </BarChart>

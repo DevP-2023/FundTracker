@@ -175,7 +175,7 @@ export default function InvestmentsPage() {
                   </Pie>
                   <Tooltip
                     contentStyle={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "10px", fontSize: "12px" }}
-                    formatter={(v: number) => [formatCurrency(v), ""]}
+                    formatter={(v: any) => [formatCurrency(v), ""]}
                   />
                 </PieChart>
               </ResponsiveContainer>

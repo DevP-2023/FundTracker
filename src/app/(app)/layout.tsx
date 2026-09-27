@@ -24,7 +24,7 @@ export default async function AppLayout({
         minHeight: "100vh",
         background: "var(--bg-primary)",
       }}>
-        <TopBar user={session.user} />
+        <TopBar user={session.user || {}} />
         <main style={{ flex: 1, padding: "24px", maxWidth: "1400px", width: "100%" }}>
           {children}
         </main>
