@@ -96,6 +96,48 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           });
         } else {
           user.id = existing.id;
+
+          // Seed categories for existing Google users who have none (one-time fix)
+          const catCount = await prisma.category.count({ where: { userId: existing.id } });
+          if (catCount === 0) {
+            for (const cat of DEFAULT_CATEGORIES) {
+              const parent = await prisma.category.create({
+                data: {
+                  userId: existing.id,
+                  name: cat.name,
+                  type: cat.type,
+                  icon: cat.icon,
+                  color: cat.color,
+                  isDefault: true,
+                },
+              });
+              for (const sub of cat.subcategories) {
+                await prisma.category.create({
+                  data: {
+                    userId: existing.id,
+                    name: sub,
+                    type: cat.type,
+                    parentId: parent.id,
+                    isDefault: true,
+                  },
+                });
+              }
+            }
+          }
+
+          // Seed accounts if none exist
+          const accCount = await prisma.account.count({ where: { userId: existing.id } });
+          if (accCount === 0) {
+            await prisma.account.createMany({
+              data: [
+                { userId: existing.id, name: "Cash", type: "cash", color: "#10b981", icon: "💵" },
+                { userId: existing.id, name: "Bank Account", type: "bank", color: "#3b82f6", icon: "🏦" },
+                { userId: existing.id, name: "Savings Account", type: "savings", color: "#8b5cf6", icon: "💰" },
+                { userId: existing.id, name: "Credit Card", type: "credit_card", color: "#ef4444", icon: "💳" },
+                { userId: existing.id, name: "UPI", type: "upi", color: "#f59e0b", icon: "📱" },
+              ],
+            });
+          }
         }
       }
       return true;
