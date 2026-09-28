@@ -17,6 +17,8 @@ const TRANSACTION_TYPES = [
   { value: "borrowing", label: "Borrowing", emoji: "🟠", color: "#f97316" },
 ];
 
+const CATEGORY_ICONS = ["🍔","🚗","🛍️","🎬","📄","🏠","🏥","📚","✈️","🛡️","📈","👤","🛒","💰","💼","💻","🏢","🏦","📊","🎁","↩️","💚","🎮","🐶","🌿","⚡","📱","🎓","👗","🏋️","🎵","🍕","☕","🎯","🔧","💡","🌍","🎪","🏖️","🍺"];
+
 export function AddTransactionModal({ onClose, onSuccess, transaction }: AddTransactionModalProps) {
   const [type, setType] = useState(transaction?.type || "expense");
   const [amount, setAmount] = useState(transaction?.amount ? String(transaction.amount) : "");
@@ -33,7 +35,14 @@ export function AddTransactionModal({ onClose, onSuccess, transaction }: AddTran
   const [success, setSuccess] = useState(false);
   const [suggestedCategory, setSuggestedCategory] = useState<string | null>(null);
 
-  useEffect(() => {
+  // Custom category creation state
+  const [showNewCategory, setShowNewCategory] = useState(false);
+  const [newCatName, setNewCatName] = useState("");
+  const [newCatIcon, setNewCatIcon] = useState("💰");
+  const [newCatLoading, setNewCatLoading] = useState(false);
+  const [showIconPicker, setShowIconPicker] = useState(false);
+
+  const loadData = () => {
     Promise.all([
       fetch("/api/categories").then(r => r.json()),
       fetch("/api/accounts").then(r => r.json()),
@@ -44,7 +53,9 @@ export function AddTransactionModal({ onClose, onSuccess, transaction }: AddTran
       setCategories(flat);
       setAccounts(accs);
     });
-  }, []);
+  };
+
+  useEffect(() => { loadData(); }, []);
 
   // Auto-categorize when description changes
   useEffect(() => {
@@ -61,6 +72,25 @@ export function AddTransactionModal({ onClose, onSuccess, transaction }: AddTran
     const cat = categories.find(c => c.name.trim() === suggestedCategory);
     if (cat) setCategoryId(cat.id);
     setSuggestedCategory(null);
+  };
+
+  const handleCreateCategory = async () => {
+    if (!newCatName.trim()) return;
+    setNewCatLoading(true);
+    const res = await fetch("/api/categories", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: newCatName.trim(), type, icon: newCatIcon }),
+    });
+    if (res.ok) {
+      const created = await res.json();
+      loadData(); // Reload categories
+      setCategoryId(created.id); // Auto-select new category
+      setShowNewCategory(false);
+      setNewCatName("");
+      setNewCatIcon("💰");
+    }
+    setNewCatLoading(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -216,13 +246,94 @@ export function AddTransactionModal({ onClose, onSuccess, transaction }: AddTran
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
             {(type === "expense" || type === "income") && (
               <div>
-                <label className="form-label">Category</label>
-                <select className="input-field" value={categoryId} onChange={e => setCategoryId(e.target.value)}>
-                  <option value="">Select category</option>
-                  {filteredCategories.map(c => (
-                    <option key={c.id} value={c.id}>{c.icon} {c.name}</option>
-                  ))}
-                </select>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
+                  <label className="form-label" style={{ marginBottom: 0 }}>Category</label>
+                  <button
+                    type="button"
+                    onClick={() => setShowNewCategory(!showNewCategory)}
+                    style={{
+                      fontSize: "11px", fontWeight: "600",
+                      color: "#3b82f6", background: "rgba(59,130,246,0.08)",
+                      border: "1px solid rgba(59,130,246,0.2)",
+                      borderRadius: "6px", padding: "2px 8px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {showNewCategory ? "✕ Cancel" : "+ New"}
+                  </button>
+                </div>
+
+                {showNewCategory ? (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                    <div style={{ display: "flex", gap: "8px" }}>
+                      {/* Icon picker button */}
+                      <button
+                        type="button"
+                        onClick={() => setShowIconPicker(!showIconPicker)}
+                        style={{
+                          width: "42px", height: "42px", flexShrink: 0,
+                          fontSize: "20px", border: "1px solid var(--border)",
+                          borderRadius: "10px", background: "var(--bg-secondary)",
+                          cursor: "pointer",
+                        }}
+                      >
+                        {newCatIcon}
+                      </button>
+                      <input
+                        className="input-field"
+                        placeholder="Category name..."
+                        value={newCatName}
+                        onChange={e => setNewCatName(e.target.value)}
+                        autoFocus
+                      />
+                    </div>
+
+                    {showIconPicker && (
+                      <div style={{
+                        display: "flex", flexWrap: "wrap", gap: "6px",
+                        padding: "10px", background: "var(--bg-secondary)",
+                        border: "1px solid var(--border)", borderRadius: "10px",
+                        maxHeight: "120px", overflowY: "auto",
+                      }}>
+                        {CATEGORY_ICONS.map(icon => (
+                          <button
+                            key={icon}
+                            type="button"
+                            onClick={() => { setNewCatIcon(icon); setShowIconPicker(false); }}
+                            style={{
+                              width: "32px", height: "32px", fontSize: "18px",
+                              border: newCatIcon === icon ? "2px solid #3b82f6" : "1px solid transparent",
+                              borderRadius: "6px", background: "none", cursor: "pointer",
+                            }}
+                          >
+                            {icon}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={handleCreateCategory}
+                      disabled={newCatLoading || !newCatName.trim()}
+                      style={{
+                        background: "linear-gradient(135deg, #3b82f6, #2563eb)",
+                        color: "white", border: "none", borderRadius: "8px",
+                        padding: "8px", fontSize: "13px", fontWeight: "600",
+                        cursor: "pointer", opacity: !newCatName.trim() ? 0.5 : 1,
+                      }}
+                    >
+                      {newCatLoading ? "Creating..." : `✓ Create "${newCatName || "Category"}"`}
+                    </button>
+                  </div>
+                ) : (
+                  <select className="input-field" value={categoryId} onChange={e => setCategoryId(e.target.value)}>
+                    <option value="">Select category</option>
+                    {filteredCategories.map(c => (
+                      <option key={c.id} value={c.id}>{c.icon} {c.name}</option>
+                    ))}
+                  </select>
+                )}
               </div>
             )}
 
