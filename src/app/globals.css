@@ -352,3 +352,51 @@ select.input-field option {
   border-radius: 16px;
   padding: 20px;
 }
+
+/* Mobile Responsiveness */
+.mobile-bottom-nav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --sidebar-width: 0px;
+  }
+  
+  aside {
+    display: none !important;
+  }
+  
+  .layout-main-content {
+    margin-left: 0 !important;
+    padding-bottom: 80px !important; /* Space for bottom nav */
+  }
+
+  .mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: var(--bg-card);
+    border-top: 1px solid var(--border);
+    justify-content: space-around;
+    align-items: center;
+    z-index: 50;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+  }
+
+  .glass-card, .stat-card, .chart-container {
+    padding: 16px;
+  }
+
+  /* Make grids 1 column on mobile */
+  .dashboard-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .top-bar-date {
+    display: none; /* Hide date on small screens */
+  }
+}

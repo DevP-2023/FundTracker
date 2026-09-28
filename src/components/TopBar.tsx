@@ -35,7 +35,7 @@ export function TopBar({ user }: TopBarProps) {
       top: 0,
       zIndex: 30,
     }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+      <div className="top-bar-date" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
         <div style={{ fontSize: "13px", color: "var(--text-muted)" }}>
           {new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
         </div>
