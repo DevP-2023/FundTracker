@@ -55,6 +55,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               email: user.email,
               name: user.name || user.email.split("@")[0],
               password: "",
+              defaultSetupCompleted: true,
             },
           });
           user.id = newUser.id;
@@ -97,9 +98,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         } else {
           user.id = existing.id;
 
-          // Seed categories for existing Google users who have none (one-time fix)
-          const catCount = await prisma.category.count({ where: { userId: existing.id } });
-          if (catCount === 0) {
+          // Seed categories/accounts for existing Google users using the new flag
+          if (!existing.defaultSetupCompleted) {
             for (const cat of DEFAULT_CATEGORIES) {
               const parent = await prisma.category.create({
                 data: {
@@ -123,11 +123,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 });
               }
             }
-          }
 
-          // Seed accounts if none exist
-          const accCount = await prisma.account.count({ where: { userId: existing.id } });
-          if (accCount === 0) {
             await prisma.account.createMany({
               data: [
                 { userId: existing.id, name: "Cash", type: "cash", color: "#10b981", icon: "💵" },
@@ -136,6 +132,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 { userId: existing.id, name: "Credit Card", type: "credit_card", color: "#ef4444", icon: "💳" },
                 { userId: existing.id, name: "UPI", type: "upi", color: "#f59e0b", icon: "📱" },
               ],
+            });
+
+            // Mark setup as completed so it never runs again
+            await prisma.user.update({
+              where: { id: existing.id },
+              data: { defaultSetupCompleted: true },
             });
           }
         }
