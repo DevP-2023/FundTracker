@@ -8,7 +8,12 @@ export async function GET(request: NextRequest) {
 
   const categories = await prisma.category.findMany({
     where: { userId: session.user.id, parentId: null },
-    include: { children: true },
+    include: { 
+      children: {
+        include: { _count: { select: { transactions: true } } }
+      },
+      _count: { select: { transactions: true } }
+    },
     orderBy: { name: "asc" },
   });
 

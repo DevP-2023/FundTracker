@@ -29,7 +29,7 @@ export function AddTransactionModal({ onClose, onSuccess, transaction }: AddTran
   const [transferToId, setTransferToId] = useState("");
   const [notes, setNotes] = useState(transaction?.notes || "");
   const [tags, setTags] = useState("");
-  const [categories, setCategories] = useState<{ id: string; name: string; icon?: string; type: string }[]>([]);
+  const [categories, setCategories] = useState<{ id: string; name: string; icon?: string; type: string; isDefault?: boolean }[]>([]);
   const [accounts, setAccounts] = useState<{ id: string; name: string; icon?: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -47,8 +47,8 @@ export function AddTransactionModal({ onClose, onSuccess, transaction }: AddTran
       fetch("/api/categories").then(r => r.json()),
       fetch("/api/accounts").then(r => r.json()),
     ]).then(([cats, accs]) => {
-      const flat = cats.flatMap((c: { id: string; name: string; icon?: string; type: string; children?: { id: string; name: string; type: string }[] }) => [
-        c, ...(c.children || []).map((ch: { id: string; name: string; type: string }) => ({ ...ch, name: `  ${ch.name}` }))
+      const flat = cats.flatMap((c: { id: string; name: string; icon?: string; type: string; isDefault?: boolean; children?: { id: string; name: string; type: string; isDefault?: boolean }[] }) => [
+        c, ...(c.children || []).map((ch: { id: string; name: string; type: string; isDefault?: boolean }) => ({ ...ch, name: `  ${ch.name}` }))
       ]);
       setCategories(flat);
       setAccounts(accs);
@@ -72,6 +72,15 @@ export function AddTransactionModal({ onClose, onSuccess, transaction }: AddTran
     const cat = categories.find(c => c.name.trim() === suggestedCategory);
     if (cat) setCategoryId(cat.id);
     setSuggestedCategory(null);
+  };
+
+  const handleDeleteCategory = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this custom category?")) return;
+    const res = await fetch(`/api/categories/${id}`, { method: "DELETE" });
+    if (res.ok) {
+      if (categoryId === id) setCategoryId("");
+      loadData();
+    }
   };
 
   const handleCreateCategory = async () => {
@@ -327,12 +336,28 @@ export function AddTransactionModal({ onClose, onSuccess, transaction }: AddTran
                     </button>
                   </div>
                 ) : (
-                  <select className="input-field" value={categoryId} onChange={e => setCategoryId(e.target.value)}>
-                    <option value="">Select category</option>
-                    {filteredCategories.map(c => (
-                      <option key={c.id} value={c.id}>{c.icon} {c.name}</option>
-                    ))}
-                  </select>
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <select className="input-field" value={categoryId} onChange={e => setCategoryId(e.target.value)} style={{ flex: 1 }}>
+                      <option value="">Select category</option>
+                      {filteredCategories.map(c => (
+                        <option key={c.id} value={c.id}>{c.icon} {c.name}</option>
+                      ))}
+                    </select>
+                    {categoryId && !categories.find(c => c.id === categoryId)?.isDefault && (
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteCategory(categoryId)}
+                        title="Delete custom category"
+                        style={{
+                          background: "rgba(239, 68, 68, 0.1)", border: "1px solid rgba(239, 68, 68, 0.2)",
+                          color: "#ef4444", borderRadius: "10px", width: "42px", flexShrink: 0,
+                          cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "16px"
+                        }}
+                      >
+                        🗑️
+                      </button>
+                    )}
+                  </div>
                 )}
               </div>
             )}
