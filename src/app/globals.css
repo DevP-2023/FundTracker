@@ -391,12 +391,23 @@ select.input-field option {
     padding: 16px;
   }
 
-  /* Make grids 1 column on mobile */
-  .dashboard-grid {
+  /* Force grids to stack on mobile */
+  .dashboard-grid,
+  div[style*="grid-template-columns"] {
     grid-template-columns: 1fr !important;
   }
 
+  /* Make tables responsive so they don't break the page width */
+  .glass-card {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .data-table {
+    min-width: 600px; /* Forces table to allow scrolling instead of squishing */
+  }
+
   .top-bar-date {
-    display: none; /* Hide date on small screens */
+    display: none !important; /* Hide date on small screens */
   }
 }
